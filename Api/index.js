@@ -1,11 +1,21 @@
-const express = require('express')
+import { fetchRange } from "./src/fetchGecko.js"
+import express from "express"
+
 const app = express()
 app.use(express.json())
-
 const port = process.env.PORT || 8080
 
-app.get('/A', (req, res) => {
-    res.send("hello A")
+app.get('/A', async (req, res) => {
+    if (!req.query["startDate"] || !req.query["endDate"]) {
+        res.json({"error": 
+            'You must provide both startDate and endDate parameters! Both can '
+            + 'be provided either as unix timestamp or in YYYY-MM-DD -format.'
+        })
+    }
+    else {
+        const results = await fetchRange(req.query["startDate"], req.query["endDate"])
+        res.json(results)
+    }
 })
 
 app.get('/B', (req, res) => {
