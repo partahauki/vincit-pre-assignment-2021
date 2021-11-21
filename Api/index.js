@@ -8,8 +8,8 @@ const port = process.env.PORT || 8080
 app.get('/A', async (req, res) => {
     if (!req.query["startDate"] || !req.query["endDate"]) {
         res.json({"error": 
-            'You must provide both startDate and endDate parameters! Both can '
-            + 'be provided either as unix timestamp or in YYYY-MM-DD -format.'
+            'You must provide both startDate and endDate parameters! Both must'
+            + ' be provided in YYYY-MM-DD -format.'
         })
     }
     else {
