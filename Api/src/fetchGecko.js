@@ -10,88 +10,95 @@ function validateDates(dates) {
     return true
 }
 
-export async function fetchRange(startDate, endDate) { 
-    if (validateDates([startDate, endDate]) === false) {
-        return {"error": "Provide valid dates with YYYY-MM-DD -format!"}
-    }
-    
+async function fetchFromGecko(startUnixtime, endUnixtime) {
     const unixtimeHour = 3600000
-    const startUnixtime = Date.parse(startDate)
-    const endUnixtime = Date.parse(endDate) + unixtimeHour
-
-    let results = null
+    let jsonData = null
     try{
         const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/`
-        + `range?vs_currency=eur&from=${(startUnixtime / 1000)}&to=${endUnixtime / 1000}`
+        + `range?vs_currency=eur&from=${(startUnixtime / 1000)}&to=${(endUnixtime + unixtimeHour) / 1000}`
 
         const response = await fetch(url)
-        results = await response.json()
+        jsonData = await response.json()
     }
     catch (e) {
         console.error(e)
         return {"error" : "An error occured while server was fetching data."}
     }
 
-    if (results["prices"].length === 0) {
-        return {"error": `No prices were found for date range ${startDate} - ${endDate}`} 
-    }
+    return jsonData
+}
 
+function parseDailyData(startUnixtime, endUnixtime, data) {
     let timestamps = []
-    for(const log of results["prices"]) {
-        timestamps.push(log[0])
+    for(const timestamp of data) {
+        timestamps.push(timestamp[0])
     }
 
-    const unixtimeDay = 86400000   
+    const unixtimeDay = 86400000
+    const unixtimeHour = 3600000
+    endUnixtime += unixtimeHour    
 
     let indexes = []
     let continue_ = 0
     for (let midnightTime = startUnixtime; midnightTime < endUnixtime; midnightTime += unixtimeDay) { 
         for (let i = continue_; i < timestamps.length; i++) {
-            if (timestamps[i] > midnightTime) {
-                continue_ = i
-                indexes.push(continue_)
+            if (timestamps[i] >= midnightTime) {
+                if (Math.abs(timestamps[i] - midnightTime) < Math.abs(timestamps[i-1] - midnightTime)) {
+                    indexes.push(i)
+                }
+                else {
+                    indexes.push((i - 1) < 0 ? i : (i - 1))
+                }
+                continue_ = i + 1
                 break
             }
         }
     }
 
-    let dailyPrices = []
+    let dailyData = []
     for (const index of indexes) {
-        const date = new Date(results["prices"][index][0])
-        const price = results["prices"][index][1]
-        dailyPrices.push({"date" : date, "price" : price})
-    }  
-    
-    return results
+        const date = new Date(data[index][0])
+        const value = data[index][1]
+        dailyData.push({"date" : date, "value" : value})
+    }
+
+    return dailyData
 }
 
+export async function getDailyPrices(startDate, endDate) { 
+    if (validateDates([startDate, endDate]) === false) {
+        return {"error": "Provide valid dates with YYYY-MM-DD -format!"}
+    }
+    
+    const startUnixtime = Date.parse(startDate)
+    const endUnixtime = Date.parse(endDate) 
 
-    // let indeksit = []
-    // let continu = 0
-    // for (let estimate = startUnixtime; estimate < endUnixtime; estimate += unixtimeDay) {
-    //     console.log(continu)
-    //     const estima = new Date(estimate)
-    //     console.error(estima)
-    //     const sliced = timestamps.slice(continu)
-    //     for (const [i, v] of sliced.entries()) {
-    //         if (sliced[i] > estimate) {
-    //             let paiva = new Date(v)
-    //             console.log(paiva)
-    //             console.log("----------------------")         
-    //             continu += i
-    //             indeksit.push(continu)
-    //             break
-    //         }
-    //     }
-    // }
+    const jsonData = await fetchFromGecko(startUnixtime, endUnixtime)
 
+    if (jsonData["prices"].length === 0) {
+        return {"error": `No prices were found for date range ${startDate} - ${endDate}`}
+    }
+    
+    const dailyPrices = parseDailyData(startUnixtime, endUnixtime, jsonData["prices"])
 
-    // console.time('reduce')
-    // let array = []
-    // for (let midnightTime = startUnixtime; midnightTime < endUnixtime; midnightTime += unixtimeDay) {
-    //     const output = timestamps.reduce((prev, curr, i) => {
-    //         return (Math.abs(curr - midnightTime) < Math.abs(prev - midnightTime) ? curr : prev) 
-    //     })
-    //     array.push(output)
-    // }
-    // console.timeEnd('reduce')
+    return dailyPrices
+}
+
+export async function getDailyVolumes(startDate, endDate) {
+    if (validateDates([startDate, endDate]) === false) {
+        return {"error": "Provide valid dates with YYYY-MM-DD -format!"}
+    }
+    
+    const startUnixtime = Date.parse(startDate)
+    const endUnixtime = Date.parse(endDate) 
+
+    const jsonData = await fetchFromGecko(startUnixtime, endUnixtime)
+
+    if (jsonData["total_volumes"].length === 0) {
+        return {"error": `No volumes were found for date range ${startDate} - ${endDate}`}
+    }
+    
+    const dailyVolumes = parseDailyData(startUnixtime, endUnixtime, jsonData["total_volumes"])
+
+    return dailyVolumes
+}

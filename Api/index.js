@@ -1,11 +1,12 @@
-import { fetchRange } from "./src/fetchGecko.js"
+import { getDailyPrices, getDailyVolumes } from "./src/fetchGecko.js"
+import { highestTradingVolume, longestDownwardTrend } from "./src/analyze.js"
 import express from "express"
 
 const app = express()
 app.use(express.json())
 const port = process.env.PORT || 8080
 
-app.get('/A', async (req, res) => {
+app.use((req, res, next) => {
     if (!req.query["startDate"] || !req.query["endDate"]) {
         res.json({"error": 
             'You must provide both startDate and endDate parameters! Both must'
@@ -13,13 +14,22 @@ app.get('/A', async (req, res) => {
         })
     }
     else {
-        const results = await fetchRange(req.query["startDate"], req.query["endDate"])
-        res.json(results)
+        next()
     }
 })
 
-app.get('/B', (req, res) => {
-    res.send("hello B")
+app.get('/A', async (req, res) => {   
+    const prices = await getDailyPrices(req.query["startDate"], req.query["endDate"])
+    //res.json(prices); return
+    const results = longestDownwardTrend(prices)
+    res.json(results)
+})
+
+app.get('/B', async (req, res) => {
+    const volumes = await getDailyVolumes(req.query["startDate"], req.query["endDate"])
+    //res.json(volumes); return
+    const results = highestTradingVolume(volumes)
+    res.json(results)
 })
 
 app.get('/C', (req, res) => {
