@@ -47,7 +47,7 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
                     indexes.push(i)
                 }
                 else {
-                    indexes.push((i - 1) < 0 ? i : (i - 1))
+                    indexes.push(i === 0 ? i : (i - 1))
                 }
                 continue_ = i + 1
                 break
@@ -55,12 +55,13 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
         }
     }
 
-    let dailyData = []
-    for (const index of indexes) {
-        const date = new Date(data[index][0])
-        const value = data[index][1]
-        dailyData.push({"date" : date, "value" : value})
+    let values = []
+    let dates = []
+    for (const i of indexes) {
+        dates.push(new Date(data[i][0]))
+        values.push(data[i][1])
     }
+    const dailyData = [dates, values]
 
     return dailyData
 }

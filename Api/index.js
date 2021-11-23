@@ -1,5 +1,5 @@
 import { getDailyPrices, getDailyVolumes } from "./src/fetchGecko.js"
-import { highestTradingVolume, longestDownwardTrend } from "./src/analyze.js"
+import { highestTradingVolume, longestDownwardTrend, timeMachine } from "./src/analyze.js"
 import express from "express"
 
 const app = express()
@@ -32,8 +32,11 @@ app.get('/B', async (req, res) => {
     res.json(results)
 })
 
-app.get('/C', (req, res) => {
-    res.send("hello C")
+app.get('/C', async (req, res) => {
+    const prices = await getDailyPrices(req.query["startDate"], req.query["endDate"])
+    //res.json(prices); return
+    const results = timeMachine(prices)
+    res.json(results)
 })
 
 app.listen(port, () => {
