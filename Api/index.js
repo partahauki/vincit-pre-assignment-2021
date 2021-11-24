@@ -18,7 +18,7 @@ app.use((req, res, next) => {
     }
 })
 
-app.get('/A', async (req, res) => {   
+app.get('/A', async (req, res) => {
     const prices = await getDailyPrices(req.query["startDate"], req.query["endDate"])
     //res.json(prices); return
     const results = longestDownwardTrend(prices)

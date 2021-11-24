@@ -58,7 +58,10 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
     let values = []
     let dates = []
     for (const i of indexes) {
-        dates.push(new Date(data[i][0]))
+        const stampOffset = data[i][0] + 43200000
+        const date = new Date(stampOffset).toISOString().slice(0,10)
+
+        dates.push(date)
         values.push(data[i][1])
     }
     const dailyData = [dates, values]
