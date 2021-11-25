@@ -1,16 +1,18 @@
 import {useState, useEffect} from 'react'
 import DateRangeSelector from './DateRangeSelector'
-import InfoA from './InfoA'
-import InfoB from './InfoB'
-import InfoC from './InfoC'
+import {InfoBoxA, InfoBoxB, InfoBoxC} from './InfoBoxes'
+
 
 const InfoContainer = () => {
     const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().slice(0,10),)
     const [endDate, setEndDate] = useState(new Date().toISOString().slice(0,10))
     const [data, setData] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
     
     const fetchData = async (start, end) => {
-		const uris = ["A", "B", "C"]
+        setIsLoading(true)
+        
+        const uris = ["A", "B", "C"]
 		
 		let jsonData = []
 		for (const uri of uris) {
@@ -21,10 +23,9 @@ const InfoContainer = () => {
 
 			jsonData.push(resData)
         }
-        
-        console.log("fetching")
 
-		setData(jsonData)
+        setData(jsonData)
+        setIsLoading(false)
     }
     
     const getDateRange = (start, end) => {
@@ -45,19 +46,23 @@ const InfoContainer = () => {
     }, [])
 
     const returnInfo = () => {
-        if (data.length === 0) {
+        if (isLoading === true) {
+            return <div id="loading">FETCHING DATA...</div>
+        }
+        else if (data.length === 0) {
             return
         }
+        
         let print = []
-        print.push(<InfoA data={data[0]}/>)
-        print.push(<InfoB data={data[1]}/>)
-        print.push(<InfoC data={data[2]}/>)
+        print.push(<InfoBoxA data={data[0]}/>)
+        print.push(<InfoBoxB data={data[1]}/>)
+        print.push(<InfoBoxC data={data[2]}/>)
 
-    return <>{print}</>
+        return <div className="infoContainer">{print}</div>
     }
 
     return (
-        <div>
+        <div className="contentContainer">
             <DateRangeSelector getDateRange={getDateRange} defaultStartDate={startDate} defaultEndDate={endDate}/>
             { returnInfo() }
         </div>

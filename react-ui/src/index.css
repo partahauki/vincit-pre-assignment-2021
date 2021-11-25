@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    font-family: 'Exo 2', sans-serif;
+    background-color: #161616;
+}
+
+.mainContainer {
+    padding: 25px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 10px;
+}
+
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.infoContainer {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 20px;
+    justify-content: center;
+}
+
+.dateRangeSelector {
+    display: flex;
+    gap: 10px;
+}
+
+.dateRangeSelector input {
+    font-size: 14px;
+    color: white;
+    background-color: #222222;
+    border: 2px solid #990000;
+}
+
+.infoBox {
+    border: 1px solid #999999;
+    background-color: #303030;
+    padding: 5px;
+    height: 150px;
+    width: 250px;
+}
+
+.infoBox h3 {
+    text-decoration: underline;
+    color: #ff6666;
+}
+
+.infoBox .number {
+    color: #ff4444;
+}
+
+.infoBox .date {
+    color: #ff6633;
+}
+
+.btn {
+    padding: 5px;
+    border: 1px solid #bb0000;
+    background-color: #bb2222;
+    color: white;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 16px;
+}
