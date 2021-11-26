@@ -13,32 +13,30 @@ app.use((req, res, next) => {
             + ' be provided in YYYY-MM-DD -format.'
         })
     }
-    else {
-        next()
-    }
+    else { next() }
 })
 
 app.get('/A', async (req, res) => {
     const prices = await getDailyPrices(req.query["startDate"], req.query["endDate"])
-    //res.json(prices); return
+    if (prices["error"]) { res.json(prices); return }
     const results = longestDownwardTrend(prices)
     res.json(results)
 })
 
 app.get('/B', async (req, res) => {
     const volumes = await getDailyVolumes(req.query["startDate"], req.query["endDate"])
-    //res.json(volumes); return
+    if (volumes["error"]) { res.json(volumes); return }
     const results = highestTradingVolume(volumes)
     res.json(results)
 })
 
 app.get('/C', async (req, res) => {
     const prices = await getDailyPrices(req.query["startDate"], req.query["endDate"])
-    //res.json(prices); return
+    if (prices["error"]) { res.json(prices); return }
     const results = timeMachine(prices)
     res.json(results)
 })
 
 app.listen(port, () => {
-    console.log("listening port " + port)
+    console.log("listening to port " + port)
 })

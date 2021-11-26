@@ -1,6 +1,10 @@
 export function longestDownwardTrend(data) {
     const prices = data[1]
     
+    if (prices.length < 2) {
+        return {"warning" : "Date range contained only one day, can't calculate downtrend."}
+    }
+
     let counter = 0
     let max = 0
     for (let i = 1; i < prices.length; i++) {
@@ -39,7 +43,7 @@ export function timeMachine(data) {
     const prices = data[1]
 
     if (prices.length < 2) {
-        return {"warning" : "Date range contained only one day"}
+        return {"warning" : "Date range contained only one day, can't calculate profit possibilities."}
     }
     
     let maxDifference = prices[1] - prices[0]
@@ -62,7 +66,7 @@ export function timeMachine(data) {
     }
 
     if(maxDifference <= 0) {
-        return {"warning" : "Date range didn't contain any potential days to buy"}
+        return {"warning" : "Date range didn't contain any potential days to make profit."}
     }
     
     return {"maxDifference" : maxDifference, "buyDate" : dates[maxStartIndex], "sellDate" : dates[maxEndIndex]}
