@@ -1,31 +1,30 @@
 export function longestDownwardTrend(data) {
     const prices = data[1]
-    
+
     if (prices.length < 2) {
-        return {"warning" : "Date range contained only one day, can't calculate downtrend."}
+        return { warning: "Date range contained only one day, can't calculate downtrend." }
     }
 
     let currentStreak = 0
     let maxStreak = 0
     for (let i = 1; i < prices.length; i++) {
-        if (prices[i] < prices[i-1]) {
+        if (prices[i] < prices[i - 1]) {
             currentStreak++
-            if (currentStreak > maxStreak) { 
+            if (currentStreak > maxStreak) {
                 maxStreak = currentStreak
             }
-        }
-        else { 
-            currentStreak = 0 
+        } else {
+            currentStreak = 0
         }
     }
 
-    return {"maxStreak" : maxStreak}
+    return { maxStreak }
 }
 
 export function highestTradingVolume(data) {
     const dates = data[0]
     const volumes = data[1]
-    
+
     let maxVolume = 0
     let maxIndex = 0
     for (const [index, volume] of volumes.entries()) {
@@ -35,7 +34,7 @@ export function highestTradingVolume(data) {
         }
     }
 
-    return {"maxVolume" : maxVolume, "date" : dates[maxIndex]}
+    return { maxVolume, date: dates[maxIndex] }
 }
 
 /*
@@ -47,17 +46,20 @@ export function timeMachine(data) {
     const prices = data[1]
 
     if (prices.length < 2) {
-        return {"warning" : "Date range contained only one day, can't calculate profit possibilities."}
+        return {
+            warning:
+            "Date range contained only one day, can't calculate profit possibilities.",
+        }
     }
-    
+
     let maxDifference = prices[1] - prices[0]
     let maxStartIndex = 0
     let maxEndIndex = 1
     let lowestPrice = prices[0]
     let lowestPriceIndex = 0
-    
+
     for (let i = 1; i < prices.length; i++) {
-        if((prices[i] - lowestPrice) > maxDifference) {
+        if ((prices[i] - lowestPrice) > maxDifference) {
             maxDifference = prices[i] - lowestPrice
             maxEndIndex = i
             maxStartIndex = lowestPriceIndex
@@ -68,9 +70,9 @@ export function timeMachine(data) {
         }
     }
 
-    if(maxDifference <= 0) {
-        return {"warning" : "Date range didn't contain any potential days to make profit."}
+    if (maxDifference <= 0) {
+        return { warning: "Date range didn't contain any potential days to make profit." }
     }
-    
-    return {"maxDifference" : maxDifference, "buyDate" : dates[maxStartIndex], "sellDate" : dates[maxEndIndex]}
+
+    return { maxDifference, buyDate: dates[maxStartIndex], sellDate: dates[maxEndIndex] }
 }
