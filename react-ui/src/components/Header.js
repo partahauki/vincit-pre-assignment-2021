@@ -6,6 +6,6 @@ const Header = ({ text }) => {
     )
 }
 
-Header.defaultProps = { text: "PASS HEADER AS A PROP" }
+Header.defaultProps = { text: "PASS HEADER AS A PROP!" }
 
 export default Header

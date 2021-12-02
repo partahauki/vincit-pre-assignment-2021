@@ -1,12 +1,12 @@
 import Header from './components/Header'
-import InfoContainer from './components/InfoContainer'
+import ContentContainer from './components/ContentContainer'
 
 function App() {
 
 	return (
 		<div className="mainContainer">
 			<Header text="Vincit Pre-Assignment"/>
-			<InfoContainer />
+			<ContentContainer />
 		</div>
 	);
 }

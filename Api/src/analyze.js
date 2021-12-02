@@ -5,21 +5,21 @@ export function longestDownwardTrend(data) {
         return {"warning" : "Date range contained only one day, can't calculate downtrend."}
     }
 
-    let counter = 0
-    let max = 0
+    let currentStreak = 0
+    let maxStreak = 0
     for (let i = 1; i < prices.length; i++) {
         if (prices[i] < prices[i-1]) {
-            counter++
-            if (counter > max) { 
-                max = counter 
+            currentStreak++
+            if (currentStreak > maxStreak) { 
+                maxStreak = currentStreak
             }
         }
         else { 
-            counter = 0 
+            currentStreak = 0 
         }
     }
 
-    return {"maxStreak" : max}
+    return {"maxStreak" : maxStreak}
 }
 
 export function highestTradingVolume(data) {
@@ -38,6 +38,10 @@ export function highestTradingVolume(data) {
     return {"maxVolume" : maxVolume, "date" : dates[maxIndex]}
 }
 
+/*
+    Searches for the most optimal day to buy and sell in a given date range,
+    meaning biggest difference in buy and sell price
+*/
 export function timeMachine(data) {
     const dates = data[0]
     const prices = data[1]
@@ -58,7 +62,6 @@ export function timeMachine(data) {
             maxEndIndex = i
             maxStartIndex = lowestPriceIndex
         }
-
         if (prices[i] < lowestPrice) {
             lowestPrice = prices[i]
             lowestPriceIndex = i

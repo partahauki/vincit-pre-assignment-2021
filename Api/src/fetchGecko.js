@@ -4,22 +4,9 @@ const UNIXTIME_HOUR = 3600000
 const UNIXTIME_12HOURS = 43200000
 const UNIXTIME_24HOURS = 86400000
 
-function validateDates(dates) {
-    for (const date of dates) {
-        if (isNaN(Date.parse(date)) === true) { 
-            return {"error" : "Provide valid dates with YYYY-MM-DD -format!"}
-        }
-    }
-
-    if (Date.parse(dates[0]) > Date.parse(dates[1])) {
-        return {"error" : "Dates must be provided in a chronological order!"}
-    }
-
-    return true
-}
-
 async function fetchFromGecko(startUnixtime, endUnixtime) {
-    let jsonData = null
+    let jsonData = {}
+    const error = {"error" : "An error occured while server was fetching data"}
     try{
         const url = `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/`
         + `range?vs_currency=eur&from=${(startUnixtime / 1000)}&to=${(endUnixtime + UNIXTIME_HOUR) / 1000}`
@@ -29,12 +16,18 @@ async function fetchFromGecko(startUnixtime, endUnixtime) {
     }
     catch (e) {
         console.error(e)
-        return {"error" : "An error occured while server was fetching data."}
+        return error
     }
+
+    if (jsonData === {}) { return error }
 
     return jsonData
 }
 
+/*
+    Compares timestamps in data given as a parameter and returns
+    values that are closest to midnight time of every day
+*/
 function parseDailyData(startUnixtime, endUnixtime, data) {
     let timestamps = []
     for(const timestamp of data) {
@@ -44,6 +37,7 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
     endUnixtime += UNIXTIME_HOUR
     startUnixtime += UNIXTIME_24HOURS  
 
+    //Finds and pushes indices of the values to be returned into an array
     let indexes = [0]
     let continue_ = 1
     for (let midnightTime = startUnixtime; midnightTime < endUnixtime; midnightTime += UNIXTIME_24HOURS) { 
@@ -52,7 +46,7 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
                 if (Math.abs(timestamps[i] - midnightTime) < Math.abs(timestamps[i-1] - midnightTime)) {
                     indexes.push(i)
                 }
-                else {
+                else { 
                     indexes.push(i - 1)
                 }
                 continue_ = i + 1
@@ -61,6 +55,7 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
         }
     }
 
+    //Uses the index-array to generate the return data
     let values = []
     let dates = []
     for (const i of indexes) {
@@ -75,42 +70,24 @@ function parseDailyData(startUnixtime, endUnixtime, data) {
     return dailyData
 }
 
-export async function getDailyPrices(startDate, endDate) { 
-    const validation = validateDates([startDate, endDate])
-    if (validation !== true) {
-        return validation
-    }
-    
-    const startUnixtime = Date.parse(startDate)
-    const endUnixtime = Date.parse(endDate) 
-
+export async function getDailyPrices(startUnixtime, endUnixtime) {
     const jsonData = await fetchFromGecko(startUnixtime, endUnixtime)
 
+    if(jsonData["error"]) { return jsonData }
     if (jsonData["prices"].length === 0) {
-        return {"error": `No prices were found for date range ${startDate} - ${endDate}`}
+        return {"warning": `No price data were found for date range ${new Date(startUnixtime)} - ${new Date(endUnixtime)}`}
     }
     
-    const dailyPrices = parseDailyData(startUnixtime, endUnixtime, jsonData["prices"])
-
-    return dailyPrices
+    return parseDailyData(startUnixtime, endUnixtime, jsonData["prices"])
 }
 
-export async function getDailyVolumes(startDate, endDate) {
-    const validation = validateDates([startDate, endDate])
-    if (validation !== true) {
-        return validation
-    }
-    
-    const startUnixtime = Date.parse(startDate)
-    const endUnixtime = Date.parse(endDate) 
-
+export async function getDailyVolumes(startUnixtime, endUnixtime) {
     const jsonData = await fetchFromGecko(startUnixtime, endUnixtime)
 
+    if(jsonData["error"]) { return jsonData }
     if (jsonData["total_volumes"].length === 0) {
-        return {"error": `No volumes were found for date range ${startDate} - ${endDate}`}
+        return {"warning": `No volume data were found for date range ${new Date(startUnixtime)} - ${new Date(endUnixtime)}`}
     }
     
-    const dailyVolumes = parseDailyData(startUnixtime, endUnixtime, jsonData["total_volumes"])
-
-    return dailyVolumes
+    return parseDailyData(startUnixtime, endUnixtime, jsonData["total_volumes"])
 }
