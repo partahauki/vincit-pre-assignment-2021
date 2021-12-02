@@ -5,7 +5,7 @@
     },
     "extends": [
         "plugin:react/recommended",
-        "airbnb"
+        "google"
     ],
     "parserOptions": {
         "ecmaFeatures": {
@@ -39,6 +39,8 @@
         "no-plusplus": "off",
         "no-restricted-syntax": [
             "off", {"selector": "for-of"}
-        ]
+        ],
+        "react/react-in-jsx-scope": "off",
+        "max-len" : [ "error", 100]
     }
 }
