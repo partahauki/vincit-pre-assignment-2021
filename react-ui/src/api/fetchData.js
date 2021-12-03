@@ -16,7 +16,7 @@ const fetchFromApi = async (endpoints, startDate, endDate) => {
         if (process.env.NODE_ENV === "development") {
             url = "http://localhost:8080/"
         } else {
-            url = "temp"
+            url = "https://pre-assignment-api.azurewebsites.net/"
         }
         url += `${endpoint}?startDate=${startDate}&endDate=${endDate}`
 

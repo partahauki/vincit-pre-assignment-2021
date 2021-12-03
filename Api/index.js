@@ -5,7 +5,7 @@ import { highestTradingVolume, longestDownwardTrend, timeMachine } from "./src/a
 import { checkQueryParams, validateQueryParams, dateParamsToUnixtime }
     from "./middlewares/queryValidator.js"
 
-const port = 8080
+const port = process.env.PORT || 8080
 const app = express()
 app.use(express.json())
 
