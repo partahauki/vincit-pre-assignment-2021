@@ -1,12 +1,19 @@
 import express from "express"
+import cors from "cors"
 import { getDailyPrices, getDailyVolumes } from "./src/fetchGecko.js"
 import { highestTradingVolume, longestDownwardTrend, timeMachine } from "./src/analyze.js"
 import { checkQueryParams, validateQueryParams, dateParamsToUnixtime }
     from "./middlewares/queryValidator.js"
 
+const port = 8080
 const app = express()
 app.use(express.json())
-const port = 8080
+
+const corsOptions = {
+    "origin": "*",
+    "methods": "GET"
+}
+app.use(cors(corsOptions))
 
 app.use(checkQueryParams())
 app.use(validateQueryParams())
