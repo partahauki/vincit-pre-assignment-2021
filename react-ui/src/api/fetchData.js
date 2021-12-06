@@ -12,13 +12,8 @@ const fetchFromApi = async (endpoints, startDate, endDate) => {
     const jsonData = []
 
     for (const endpoint of endpoints) {
-        let url = ""
-        if (process.env.NODE_ENV === "development") {
-            url = "http://localhost:8080/"
-        } else {
-            url = "https://pre-assignment-api.azurewebsites.net/"
-        }
-        url += `${endpoint}?startDate=${startDate}&endDate=${endDate}`
+        const url = "http://localhost:8080/" +
+            `${endpoint}?startDate=${startDate}&endDate=${endDate}`
 
         const resData = await doFetch(url)
 

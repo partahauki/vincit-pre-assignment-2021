@@ -10,8 +10,8 @@ const app = express()
 app.use(express.json())
 
 const corsOptions = {
-    "origin": "*",
-    "methods": "GET"
+    origin: "*",
+    methods: "GET",
 }
 app.use(cors(corsOptions))
 

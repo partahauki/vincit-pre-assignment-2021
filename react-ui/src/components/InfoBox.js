@@ -1,5 +1,4 @@
 import PropTypes from "prop-types"
-// import {dateToRegionFormat} from "../utils/date"
 import {numberFormatting} from "../utils/number"
 
 const InfoBox = ({data, type}) => {
@@ -26,7 +25,6 @@ const InfoBox = ({data, type}) => {
         case "volume": {
             const volume = numberFormatting(data.maxVolume)
             const volumeSpan = <span className="number">{volume} €</span>
-            // const formatedDate = dateToRegionFormat(new Date(data.date))
             const dateSpan = <span className="date">{data.date}</span>
 
             const header = <>Highest trading volume</>
